@@ -1,0 +1,31 @@
+# macOS
+.DS_Store
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Terragrunt
+.terragrunt-cache/
+terragrunt-debug.tfvars.json
+
+# Variables / secrets
+*.tfvars
+*.tfvars.json
+!example.tfvars
+.env
+.env.*
+
+# Editors
+.vscode/
+.idea/
+*.swp
