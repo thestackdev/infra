@@ -16,7 +16,7 @@ data "aws_ami" "ubuntu" {
 
 resource "aws_security_group" "this" {
   name        = "${var.instance_name}-sg"
-  description = "Egress only — SSM Agent outbound to AWS endpoints"
+  description = "SSM Agent egress to AWS endpoints"
   vpc_id      = var.vpc_id
 
   tags = merge(var.tags, {
