@@ -16,7 +16,7 @@ data "aws_ami" "ubuntu" {
 
 resource "aws_security_group" "this" {
   name_prefix = "${var.instance_name}-sg-"
-  description = "Security group for ${var.instance_name}; permits configurable egress (default: all outbound)."
+  description = "${var.instance_name}-sg"
   vpc_id      = var.vpc_id
 
   tags = merge(var.tags, {

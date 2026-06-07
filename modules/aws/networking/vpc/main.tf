@@ -1,6 +1,14 @@
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
 locals {
-  az_count          = length(var.azs)
-  nat_gateway_count = var.enable_nat_gateway ? (var.single_nat_gateway ? 1 : local.az_count) : 0
+  available_azs        = sort(data.aws_availability_zones.available.names)
+  azs                  = slice(local.available_azs, 0, min(var.max_azs, length(local.available_azs)))
+  az_count             = length(local.azs)
+  nat_gateway_count    = var.enable_nat_gateway ? (var.single_nat_gateway ? 1 : local.az_count) : 0
+  private_subnet_cidrs = [for i in range(local.az_count) : cidrsubnet(var.cidr, 8, i + 1)]
+  public_subnet_cidrs  = [for i in range(local.az_count) : cidrsubnet(var.cidr, 8, i + 101)]
 }
 
 resource "aws_vpc" "this" {
@@ -17,12 +25,12 @@ resource "aws_subnet" "public" {
   count = local.az_count
 
   vpc_id                  = aws_vpc.this.id
-  cidr_block              = var.public_subnets[count.index]
-  availability_zone       = var.azs[count.index]
+  cidr_block              = local.public_subnet_cidrs[count.index]
+  availability_zone       = local.azs[count.index]
   map_public_ip_on_launch = var.map_public_ip_on_launch
 
   tags = merge(var.tags, {
-    Name = "${var.name}-public-${var.azs[count.index]}"
+    Name = "${var.name}-public-${local.azs[count.index]}"
     Tier = "public"
   })
 }
@@ -31,11 +39,11 @@ resource "aws_subnet" "private" {
   count = local.az_count
 
   vpc_id            = aws_vpc.this.id
-  cidr_block        = var.private_subnets[count.index]
-  availability_zone = var.azs[count.index]
+  cidr_block        = local.private_subnet_cidrs[count.index]
+  availability_zone = local.azs[count.index]
 
   tags = merge(var.tags, {
-    Name = "${var.name}-private-${var.azs[count.index]}"
+    Name = "${var.name}-private-${local.azs[count.index]}"
     Tier = "private"
   })
 }
@@ -54,7 +62,7 @@ resource "aws_eip" "nat" {
   domain = "vpc"
 
   tags = merge(var.tags, {
-    Name = "${var.name}-nat-${var.azs[count.index]}"
+    Name = "${var.name}-nat-${local.azs[count.index]}"
   })
 
   depends_on = [aws_internet_gateway.this]
@@ -67,7 +75,7 @@ resource "aws_nat_gateway" "this" {
   subnet_id     = aws_subnet.public[count.index].id
 
   tags = merge(var.tags, {
-    Name = "${var.name}-nat-${var.azs[count.index]}"
+    Name = "${var.name}-nat-${local.azs[count.index]}"
   })
 
   depends_on = [aws_internet_gateway.this]
@@ -107,7 +115,7 @@ resource "aws_route_table" "private" {
   }
 
   tags = merge(var.tags, {
-    Name = var.enable_nat_gateway && !var.single_nat_gateway ? "${var.name}-private-rt-${var.azs[count.index]}" : "${var.name}-private-rt"
+    Name = var.enable_nat_gateway && !var.single_nat_gateway ? "${var.name}-private-rt-${local.azs[count.index]}" : "${var.name}-private-rt"
   })
 }
 

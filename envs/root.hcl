@@ -37,8 +37,3 @@ provider "aws" {
 }
 EOF
 }
-
-inputs = {
-  tags = local.common.locals.common_tags
-}
-

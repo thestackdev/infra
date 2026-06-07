@@ -1,70 +1,70 @@
 variable "vpc_id" {
   type        = string
-  description = "VPC the instance attaches to."
+  description = "VPC ID."
 }
 
 variable "instance_name" {
   type        = string
-  description = "Value of the Name tag on the instance."
+  description = "Instance Name tag."
 }
 
 variable "filter_name" {
   type        = string
-  description = "AMI name pattern for the `aws_ami` lookup."
+  description = "AMI name pattern."
 }
 
 variable "owners" {
   type        = string
-  description = "AMI owner account ID (e.g. `099720109477` for Canonical)."
+  description = "AMI owner account ID."
 }
 
 variable "instance_type" {
   type        = string
-  description = "EC2 instance type, e.g. `t3.small`."
+  description = "EC2 instance type."
 }
 
 variable "assign_public_ip" {
   type        = bool
-  description = "Boolean flag to associate public ip address"
+  description = "Associate a public IP."
   default     = false
 }
 
 variable "subnet_id" {
   type        = string
-  description = "Subnet to launch the instance into. Must belong to `vpc_id`."
+  description = "Subnet ID."
 }
 
 variable "iam_instance_profile_name" {
   type        = string
-  description = "IAM instance profile attached to the instance (for SSM Session Manager, etc.)."
+  description = "IAM instance profile name."
 }
 
 variable "root_volume_type" {
   type        = string
-  description = "EBS volume type for the root device (gp3 recommended)."
+  description = "Root EBS volume type."
   default     = "gp3"
 }
 
 variable "root_volume_size" {
   type        = number
-  description = "Root EBS volume size in GiB."
+  description = "Root EBS volume size (GiB)."
   default     = 20
 }
 
 variable "root_volume_kms_key_arn" {
   type        = string
-  description = "Optional CMK ARN for root EBS encryption. When null, uses the AWS-managed `aws/ebs` key."
+  description = "CMK ARN for root EBS. Null uses AWS-managed key."
   default     = null
 }
 
 variable "detailed_monitoring" {
   type        = bool
-  description = "Enable EC2 detailed (1-minute) CloudWatch monitoring."
+  description = "Enable detailed monitoring."
   default     = false
 }
 
 variable "tags" {
   type        = map(string)
-  description = "Tags applied to the instance."
+  description = "Tags applied to resources."
   default     = {}
 }
