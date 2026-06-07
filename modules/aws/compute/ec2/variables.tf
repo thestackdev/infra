@@ -23,14 +23,14 @@ variable "instance_type" {
   description = "EC2 instance type, e.g. `t3.small`."
 }
 
-variable "key_name" {
-  type        = string
-  description = "EC2 key pair name for SSH access."
-}
-
 variable "subnet_id" {
   type        = string
   description = "Subnet to launch the instance into. Must belong to `vpc_id`."
+}
+
+variable "iam_instance_profile_name" {
+  type        = string
+  description = "IAM instance profile attached to the instance (for SSM Session Manager, etc.)."
 }
 
 variable "tags" {

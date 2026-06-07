@@ -12,5 +12,5 @@ include "envcommon" {
 }
 
 inputs = {
-  bucket_name = "thestackdev-dotfiles-${local.account.locals.env}"
+  bucket_name = "thestackdev-media-${local.account.locals.env}"
 }
