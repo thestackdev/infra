@@ -39,6 +39,30 @@ variable "iam_instance_profile_name" {
   description = "IAM instance profile attached to the instance (for SSM Session Manager, etc.)."
 }
 
+variable "root_volume_type" {
+  type        = string
+  description = "EBS volume type for the root device (gp3 recommended)."
+  default     = "gp3"
+}
+
+variable "root_volume_size" {
+  type        = number
+  description = "Root EBS volume size in GiB."
+  default     = 20
+}
+
+variable "root_volume_kms_key_arn" {
+  type        = string
+  description = "Optional CMK ARN for root EBS encryption. When null, uses the AWS-managed `aws/ebs` key."
+  default     = null
+}
+
+variable "detailed_monitoring" {
+  type        = bool
+  description = "Enable EC2 detailed (1-minute) CloudWatch monitoring."
+  default     = false
+}
+
 variable "tags" {
   type        = map(string)
   description = "Tags applied to the instance."

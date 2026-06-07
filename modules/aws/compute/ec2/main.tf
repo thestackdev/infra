@@ -15,13 +15,17 @@ data "aws_ami" "ubuntu" {
 }
 
 resource "aws_security_group" "this" {
-  name        = "${var.instance_name}-sg"
-  description = "SSM Agent egress to AWS endpoints"
+  name_prefix = "${var.instance_name}-sg-"
+  description = "Security group for ${var.instance_name}; permits configurable egress (default: all outbound)."
   vpc_id      = var.vpc_id
 
   tags = merge(var.tags, {
     Name = "${var.instance_name}-sg"
   })
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_vpc_security_group_egress_rule" "egress_rule" {
@@ -38,6 +42,27 @@ resource "aws_instance" "this" {
   associate_public_ip_address = var.assign_public_ip
   iam_instance_profile        = var.iam_instance_profile_name
   vpc_security_group_ids      = [aws_security_group.this.id]
+  monitoring                  = var.detailed_monitoring
+
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 2
+    instance_metadata_tags      = "enabled"
+  }
+
+  root_block_device {
+    volume_type           = var.root_volume_type
+    volume_size           = var.root_volume_size
+    encrypted             = true
+    kms_key_id            = var.root_volume_kms_key_arn
+    delete_on_termination = true
+
+    tags = merge(var.tags, {
+      Name = "${var.instance_name}-root"
+    })
+  }
+
   tags = merge(var.tags, {
     Name = var.instance_name
   })

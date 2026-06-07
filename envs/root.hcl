@@ -13,7 +13,7 @@ remote_state {
   config = {
     bucket         = "${local.common.locals.project}-terragrunt-state-${local.account.locals.env}"
     key            = "${path_relative_to_include()}/terraform.tfstate"
-    region         = "us-east-1"
+    region         = local.account.locals.aws_region
     encrypt        = true
     dynamodb_table = "tf-locks"
   }
@@ -36,5 +36,9 @@ provider "aws" {
   allowed_account_ids = ["${local.account.locals.aws_account_id}"]
 }
 EOF
+}
+
+inputs = {
+  tags = local.common.locals.common_tags
 }
 
