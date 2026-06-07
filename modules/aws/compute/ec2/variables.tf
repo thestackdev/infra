@@ -23,6 +23,12 @@ variable "instance_type" {
   description = "EC2 instance type, e.g. `t3.small`."
 }
 
+variable "assign_public_ip" {
+  type        = bool
+  description = "Boolean flag to associate public ip address"
+  default     = false
+}
+
 variable "subnet_id" {
   type        = string
   description = "Subnet to launch the instance into. Must belong to `vpc_id`."

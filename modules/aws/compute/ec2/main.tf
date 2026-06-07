@@ -32,11 +32,12 @@ resource "aws_vpc_security_group_egress_rule" "egress_rule" {
 }
 
 resource "aws_instance" "this" {
-  ami                    = data.aws_ami.ubuntu.id
-  instance_type          = var.instance_type
-  subnet_id              = var.subnet_id
-  iam_instance_profile   = var.iam_instance_profile_name
-  vpc_security_group_ids = [aws_security_group.this.id]
+  ami                         = data.aws_ami.ubuntu.id
+  instance_type               = var.instance_type
+  subnet_id                   = var.subnet_id
+  associate_public_ip_address = var.assign_public_ip
+  iam_instance_profile        = var.iam_instance_profile_name
+  vpc_security_group_ids      = [aws_security_group.this.id]
   tags = merge(var.tags, {
     Name = var.instance_name
   })

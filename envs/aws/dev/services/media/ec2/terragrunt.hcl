@@ -27,6 +27,7 @@ inputs = {
   iam_instance_profile_name = dependency.iam.outputs.instance_profile_names["ssm"]
   instance_name             = "media-${local.account.locals.env}"
   filter_name               = "ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"
-  instance_type             = "t2.micro"
+  instance_type             = "t3.micro"
+  assign_public_ip          = true
   owners                    = "099720109477"
 }
