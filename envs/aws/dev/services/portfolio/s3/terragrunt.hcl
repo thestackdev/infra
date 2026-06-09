@@ -1,5 +1,6 @@
 locals {
   account = read_terragrunt_config(find_in_parent_folders("account.hcl"))
+  common  = read_terragrunt_config(find_in_parent_folders("common.hcl"))
 }
 
 include "root" {
@@ -12,5 +13,6 @@ include "envcommon" {
 }
 
 inputs = {
-  bucket_name = "thestackdev-media-${local.account.locals.env}"
+  bucket_name   = "${local.common.locals.project}-portfolio-${local.account.locals.env}"
+  force_destroy = true
 }

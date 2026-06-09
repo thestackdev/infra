@@ -1,4 +1,5 @@
 data "aws_ami" "ubuntu" {
+  count       = var.enabled ? 1 : 0
   most_recent = true
 
   filter {
@@ -15,6 +16,7 @@ data "aws_ami" "ubuntu" {
 }
 
 resource "aws_security_group" "this" {
+  count       = var.enabled ? 1 : 0
   name_prefix = "${var.instance_name}-sg-"
   description = "${var.instance_name}-sg"
   vpc_id      = var.vpc_id
@@ -29,19 +31,21 @@ resource "aws_security_group" "this" {
 }
 
 resource "aws_vpc_security_group_egress_rule" "egress_rule" {
-  security_group_id = aws_security_group.this.id
+  count             = var.enabled ? 1 : 0
+  security_group_id = aws_security_group.this[0].id
 
   cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "-1"
 }
 
 resource "aws_instance" "this" {
-  ami                         = data.aws_ami.ubuntu.id
+  count                       = var.enabled ? 1 : 0
+  ami                         = data.aws_ami.ubuntu[0].id
   instance_type               = var.instance_type
   subnet_id                   = var.subnet_id
   associate_public_ip_address = var.assign_public_ip
   iam_instance_profile        = var.iam_instance_profile_name
-  vpc_security_group_ids      = [aws_security_group.this.id]
+  vpc_security_group_ids      = [aws_security_group.this[0].id]
   monitoring                  = var.detailed_monitoring
 
   metadata_options {
