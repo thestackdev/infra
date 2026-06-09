@@ -1,5 +1,5 @@
 output "vpc_id" {
-  value       = aws_vpc.this.id
+  value       = one(aws_vpc.this[*].id)
   description = "VPC ID."
 }
 
@@ -9,7 +9,7 @@ output "azs" {
 }
 
 output "vpc_cidr_block" {
-  value       = aws_vpc.this.cidr_block
+  value       = one(aws_vpc.this[*].cidr_block)
   description = "VPC CIDR block."
 }
 
@@ -34,7 +34,7 @@ output "private_subnet_cidrs" {
 }
 
 output "internet_gateway_id" {
-  value       = aws_internet_gateway.this.id
+  value       = one(aws_internet_gateway.this[*].id)
   description = "Internet Gateway ID."
 }
 
@@ -44,7 +44,7 @@ output "nat_gateway_ids" {
 }
 
 output "public_route_table_id" {
-  value       = aws_route_table.public.id
+  value       = one(aws_route_table.public[*].id)
   description = "Public route table ID."
 }
 

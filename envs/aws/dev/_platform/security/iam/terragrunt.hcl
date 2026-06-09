@@ -7,28 +7,12 @@ include "envcommon" {
   expose = true
 }
 
-dependency "media_bucket" {
-  config_path = "${dirname(find_in_parent_folders("account.hcl"))}/services/media/s3"
-}
-
 inputs = {
+  enabled = false
   roles = {
     ssm = {
-      trusted_services    = ["ec2.amazonaws.com"]
-      managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
-      inline_policies = {
-        media_s3_read = jsonencode({
-          Version = "2012-10-17"
-          Statement = [{
-            Effect = "Allow"
-            Action = ["s3:GetObject", "s3:ListBucket"]
-            Resource = [
-              dependency.media_bucket.outputs.bucket_arn,
-              "${dependency.media_bucket.outputs.bucket_arn}/*",
-            ]
-          }]
-        })
-      }
+      trusted_services        = ["ec2.amazonaws.com"]
+      managed_policy_arns     = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
       create_instance_profile = true
     }
   }

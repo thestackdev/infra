@@ -1,3 +1,9 @@
+variable "enabled" {
+  type        = bool
+  description = "Flag to enable/disable"
+  default     = false
+}
+
 variable "bucket_name" {
   type        = string
   description = "S3 bucket name."

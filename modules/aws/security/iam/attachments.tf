@@ -1,6 +1,6 @@
 locals {
   role_policy_pairs = flatten([
-    for role_key, role in var.roles : [
+    for role_key, role in local.roles : [
       for policy_arn in role.managed_policy_arns : {
         role_key   = role_key
         policy_arn = policy_arn

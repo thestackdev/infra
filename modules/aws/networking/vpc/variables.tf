@@ -1,3 +1,9 @@
+variable "enabled" {
+  type        = bool
+  description = "Flag to enable/disable"
+  default     = false
+}
+
 variable "name" {
   type        = string
   description = "Name prefix for the VPC and its resources."

@@ -1,11 +1,13 @@
 resource "aws_s3_bucket" "this" {
+  count         = var.enabled ? 1 : 0
   bucket        = var.bucket_name
   force_destroy = var.force_destroy
   tags          = var.tags
 }
 
 resource "aws_s3_bucket_public_access_block" "this" {
-  bucket = aws_s3_bucket.this.id
+  count  = var.enabled ? 1 : 0
+  bucket = aws_s3_bucket.this[0].id
 
   block_public_acls       = true
   block_public_policy     = true
@@ -14,7 +16,8 @@ resource "aws_s3_bucket_public_access_block" "this" {
 }
 
 resource "aws_s3_bucket_ownership_controls" "this" {
-  bucket = aws_s3_bucket.this.id
+  count  = var.enabled ? 1 : 0
+  bucket = aws_s3_bucket.this[0].id
 
   rule {
     object_ownership = "BucketOwnerEnforced"
@@ -22,7 +25,8 @@ resource "aws_s3_bucket_ownership_controls" "this" {
 }
 
 resource "aws_s3_bucket_versioning" "this" {
-  bucket = aws_s3_bucket.this.id
+  count  = var.enabled ? 1 : 0
+  bucket = aws_s3_bucket.this[0].id
 
   versioning_configuration {
     status = var.versioning_enabled ? "Enabled" : "Disabled"
@@ -30,7 +34,8 @@ resource "aws_s3_bucket_versioning" "this" {
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
-  bucket = aws_s3_bucket.this.id
+  count  = var.enabled ? 1 : 0
+  bucket = aws_s3_bucket.this[0].id
 
   rule {
     bucket_key_enabled = var.kms_key_arn != null

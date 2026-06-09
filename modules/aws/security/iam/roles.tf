@@ -1,5 +1,9 @@
+locals {
+  roles = var.enabled ? var.roles : {}
+}
+
 data "aws_iam_policy_document" "assume_role" {
-  for_each = var.roles
+  for_each = local.roles
   statement {
     actions = ["sts:AssumeRole"]
     principals {
@@ -10,7 +14,7 @@ data "aws_iam_policy_document" "assume_role" {
 }
 
 resource "aws_iam_role" "this" {
-  for_each = var.roles
+  for_each = local.roles
 
   name               = "${var.name_prefix}-${each.key}"
   assume_role_policy = data.aws_iam_policy_document.assume_role[each.key].json
@@ -20,7 +24,7 @@ resource "aws_iam_role" "this" {
 resource "aws_iam_role_policy" "inline" {
   for_each = {
     for pair in flatten([
-      for role_key, role in var.roles : [
+      for role_key, role in local.roles : [
         for pname, pjson in role.inline_policies : {
           role_key = role_key
           pname    = pname
@@ -37,7 +41,7 @@ resource "aws_iam_role_policy" "inline" {
 
 resource "aws_iam_instance_profile" "this" {
   for_each = {
-    for k, v in var.roles : k => v
+    for k, v in local.roles : k => v
     if v.create_instance_profile
   }
   name = "${var.name_prefix}-${each.key}"

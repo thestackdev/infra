@@ -13,6 +13,7 @@ include "envcommon" {
 }
 
 inputs = {
+  enabled       = false
   bucket_name   = "${local.common.locals.project}-portfolio-${local.account.locals.env}"
   force_destroy = true
 }

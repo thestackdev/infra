@@ -23,9 +23,9 @@ dependency "iam" {
 
 inputs = {
   enabled                   = false
-  vpc_id                    = dependency.vpc.outputs.vpc_id
-  subnet_id                 = dependency.vpc.outputs.public_subnets[0]
-  iam_instance_profile_name = dependency.iam.outputs.instance_profile_names["ssm"]
+  vpc_id                    = try(dependency.vpc.outputs.vpc_id, "")
+  subnet_id                 = try(dependency.vpc.outputs.public_subnets[0], "")
+  iam_instance_profile_name = try(dependency.iam.outputs.instance_profile_names["ssm"], "")
   instance_name             = "${local.common.locals.project}-vpn-${local.account.locals.env}"
   filter_name               = "ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"
   instance_type             = "t3.micro"

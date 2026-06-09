@@ -1,9 +1,10 @@
 data "aws_availability_zones" "available" {
+  count = var.enabled ? 1 : 0
   state = "available"
 }
 
 locals {
-  available_azs        = sort(data.aws_availability_zones.available.names)
+  available_azs        = var.enabled ? sort(data.aws_availability_zones.available[0].names) : []
   azs                  = slice(local.available_azs, 0, min(var.max_azs, length(local.available_azs)))
   az_count             = length(local.azs)
   nat_gateway_count    = var.enable_nat_gateway ? (var.single_nat_gateway ? 1 : local.az_count) : 0
@@ -12,6 +13,7 @@ locals {
 }
 
 resource "aws_vpc" "this" {
+  count                = var.enabled ? 1 : 0
   cidr_block           = var.cidr
   enable_dns_support   = true
   enable_dns_hostnames = true
@@ -24,7 +26,7 @@ resource "aws_vpc" "this" {
 resource "aws_subnet" "public" {
   count = local.az_count
 
-  vpc_id                  = aws_vpc.this.id
+  vpc_id                  = aws_vpc.this[0].id
   cidr_block              = local.public_subnet_cidrs[count.index]
   availability_zone       = local.azs[count.index]
   map_public_ip_on_launch = var.map_public_ip_on_launch
@@ -38,7 +40,7 @@ resource "aws_subnet" "public" {
 resource "aws_subnet" "private" {
   count = local.az_count
 
-  vpc_id            = aws_vpc.this.id
+  vpc_id            = aws_vpc.this[0].id
   cidr_block        = local.private_subnet_cidrs[count.index]
   availability_zone = local.azs[count.index]
 
@@ -49,7 +51,8 @@ resource "aws_subnet" "private" {
 }
 
 resource "aws_internet_gateway" "this" {
-  vpc_id = aws_vpc.this.id
+  count  = var.enabled ? 1 : 0
+  vpc_id = aws_vpc.this[0].id
 
   tags = merge(var.tags, {
     Name = "${var.name}-igw"
@@ -57,7 +60,7 @@ resource "aws_internet_gateway" "this" {
 }
 
 resource "aws_eip" "nat" {
-  count = local.nat_gateway_count
+  count = var.enabled ? local.nat_gateway_count : 0
 
   domain = "vpc"
 
@@ -69,7 +72,7 @@ resource "aws_eip" "nat" {
 }
 
 resource "aws_nat_gateway" "this" {
-  count = local.nat_gateway_count
+  count = var.enabled ? local.nat_gateway_count : 0
 
   allocation_id = aws_eip.nat[count.index].id
   subnet_id     = aws_subnet.public[count.index].id
@@ -82,11 +85,12 @@ resource "aws_nat_gateway" "this" {
 }
 
 resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.this.id
+  count  = var.enabled ? 1 : 0
+  vpc_id = aws_vpc.this[0].id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.this.id
+    gateway_id = aws_internet_gateway.this[0].id
   }
 
   tags = merge(var.tags, {
@@ -98,13 +102,13 @@ resource "aws_route_table_association" "public" {
   count = local.az_count
 
   subnet_id      = aws_subnet.public[count.index].id
-  route_table_id = aws_route_table.public.id
+  route_table_id = aws_route_table.public[0].id
 }
 
 resource "aws_route_table" "private" {
-  count = var.enable_nat_gateway ? local.az_count : 1
+  count = var.enabled ? (var.enable_nat_gateway ? local.az_count : 1) : 0
 
-  vpc_id = aws_vpc.this.id
+  vpc_id = aws_vpc.this[0].id
 
   dynamic "route" {
     for_each = var.enable_nat_gateway ? [1] : []

@@ -1,3 +1,9 @@
+variable "enabled" {
+  type        = bool
+  description = "Flag to enable/disable"
+  default     = false
+}
+
 variable "roles" {
   type = map(object({
     trusted_services        = list(string)
