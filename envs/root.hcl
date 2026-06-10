@@ -14,6 +14,7 @@ remote_state {
     bucket         = "${local.common.locals.project}-terragrunt-state-${local.account.locals.env}"
     key            = "${path_relative_to_include()}/terraform.tfstate"
     region         = local.account.locals.aws_region
+    profile        = local.account.locals.profile
     encrypt        = true
     dynamodb_table = "tf-locks"
   }
@@ -25,6 +26,7 @@ generate "provider" {
   contents  = <<EOF
 provider "aws" {
   region              = "${local.account.locals.aws_region}"
+  profile             = "${local.account.locals.profile}"
   allowed_account_ids = ["${local.account.locals.aws_account_id}"]
 }
 EOF
