@@ -8,13 +8,15 @@ include "root" {
 }
 
 include "envcommon" {
-  path   = "${dirname(find_in_parent_folders("root.hcl"))}/aws/_envcommon/storage/s3.hcl"
+  path   = "${dirname(find_in_parent_folders("root.hcl"))}/aws/_envcommon/cdn/cloudfront.hcl"
   expose = true
 }
 
+dependency "s3_bucket" {
+  config_path = "../s3"
+}
+
 inputs = {
-  enabled         = true
-  bucket_name     = "${local.common.locals.project}-portfolio-${local.account.locals.env}"
-  force_destroy   = true
-  website_enabled = true
+  enabled              = true
+  regional_domain_name = dependency.s3_bucket.outputs.bucket_regional_domain_name
 }

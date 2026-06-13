@@ -1,14 +1,25 @@
 locals {
-  roles = var.enabled ? var.roles : {}
+  roles = {
+    for k, v in var.roles : k => v
+    if v.enabled
+  }
 }
 
 data "aws_iam_policy_document" "assume_role" {
   for_each = local.roles
   statement {
-    actions = ["sts:AssumeRole"]
+    actions = [each.value.sts_action]
     principals {
-      type        = "Service"
-      identifiers = each.value.trusted_services
+      type        = each.value.principal_type
+      identifiers = each.value.principal_identifiers
+    }
+    dynamic "condition" {
+      for_each = each.value.conditions
+      content {
+        test     = condition.value.test
+        variable = condition.value.variable
+        values   = condition.value.values
+      }
     }
   }
 }

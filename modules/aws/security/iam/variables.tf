@@ -1,12 +1,14 @@
-variable "enabled" {
-  type        = bool
-  description = "Flag to enable/disable"
-  default     = false
-}
-
 variable "roles" {
   type = map(object({
-    trusted_services        = list(string)
+    enabled               = optional(bool, false)
+    principal_type        = optional(string, "Service")
+    principal_identifiers = list(string)
+    sts_action            = optional(string, "sts:AssumeRole")
+    conditions = optional(list(object({
+      test     = string
+      variable = string
+      values   = list(string)
+    })), [])
     managed_policy_arns     = list(string)
     inline_policies         = optional(map(string), {})
     create_instance_profile = optional(bool, false)
