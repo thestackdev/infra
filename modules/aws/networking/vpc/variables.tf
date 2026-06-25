@@ -31,12 +31,6 @@ variable "enable_nat_gateway" {
   default     = true
 }
 
-variable "single_nat_gateway" {
-  type        = bool
-  description = "Use one NAT gateway across AZs instead of one per AZ."
-  default     = true
-}
-
 variable "map_public_ip_on_launch" {
   type        = bool
   description = "Auto-assign public IPv4 in public subnets."

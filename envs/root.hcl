@@ -29,5 +29,12 @@ provider "aws" {
   profile             = "${local.account.locals.profile}"
   allowed_account_ids = ["${local.account.locals.aws_account_id}"]
 }
+
+provider "aws" {
+  alias               = "us_east_1"
+  region              = "us-east-1"
+  profile             = "${local.account.locals.profile}"
+  allowed_account_ids = ["${local.account.locals.aws_account_id}"]
+}
 EOF
 }

@@ -9,24 +9,6 @@ variable "bucket_name" {
   description = "Globally unique name of the S3 bucket."
 }
 
-variable "website_enabled" {
-  type        = bool
-  description = "Enable static website hosting on the bucket."
-  default     = false
-}
-
-variable "website_index_document" {
-  type        = string
-  description = "The index document served when accessing the website root."
-  default     = "index.html"
-}
-
-variable "website_error_document" {
-  type        = string
-  description = "The error document served when a requested object does not exist."
-  default     = "error.html"
-}
-
 variable "force_destroy" {
   type        = bool
   description = "Allow the bucket to be destroyed even when it contains objects. Use with caution."

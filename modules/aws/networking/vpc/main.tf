@@ -7,7 +7,7 @@ locals {
   available_azs        = var.enabled ? sort(data.aws_availability_zones.available[0].names) : []
   azs                  = slice(local.available_azs, 0, min(var.max_azs, length(local.available_azs)))
   az_count             = length(local.azs)
-  nat_gateway_count    = var.enable_nat_gateway ? (var.single_nat_gateway ? 1 : local.az_count) : 0
+  nat_gateway_count    = var.enable_nat_gateway ? local.az_count : 0
   private_subnet_cidrs = [for i in range(local.az_count) : cidrsubnet(var.cidr, 8, i + 1)]
   public_subnet_cidrs  = [for i in range(local.az_count) : cidrsubnet(var.cidr, 8, i + 101)]
 }
@@ -114,12 +114,12 @@ resource "aws_route_table" "private" {
     for_each = var.enable_nat_gateway ? [1] : []
     content {
       cidr_block     = "0.0.0.0/0"
-      nat_gateway_id = aws_nat_gateway.this[var.single_nat_gateway ? 0 : count.index].id
+      nat_gateway_id = aws_nat_gateway.this[count.index].id
     }
   }
 
   tags = merge(var.tags, {
-    Name = var.enable_nat_gateway && !var.single_nat_gateway ? "${var.name}-private-rt-${local.azs[count.index]}" : "${var.name}-private-rt"
+    Name = var.enable_nat_gateway ? "${var.name}-private-rt-${local.azs[count.index]}" : "${var.name}-private-rt"
   })
 }
 
@@ -127,5 +127,5 @@ resource "aws_route_table_association" "private" {
   count = local.az_count
 
   subnet_id      = aws_subnet.private[count.index].id
-  route_table_id = aws_route_table.private[var.enable_nat_gateway && !var.single_nat_gateway ? count.index : 0].id
+  route_table_id = aws_route_table.private[var.enable_nat_gateway ? count.index : 0].id
 }

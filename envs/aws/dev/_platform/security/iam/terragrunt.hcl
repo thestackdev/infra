@@ -10,7 +10,7 @@ include "envcommon" {
 inputs = {
   roles = {
     ssm = {
-      enabled                 = false
+      enabled                 = true
       principal_type          = "Service"
       principal_identifiers   = ["ec2.amazonaws.com"]
       managed_policy_arns     = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]

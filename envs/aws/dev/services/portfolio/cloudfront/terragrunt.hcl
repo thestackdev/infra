@@ -17,6 +17,8 @@ dependency "s3_bucket" {
 }
 
 inputs = {
-  enabled              = true
-  regional_domain_name = dependency.s3_bucket.outputs.bucket_regional_domain_name
+  enabled                   = false
+  regional_domain_name      = dependency.s3_bucket.outputs.bucket_regional_domain_name
+  domain_name               = "shanmukeshwar.dev"
+  subject_alternative_names = ["www.shanmukeshwar.dev"]
 }

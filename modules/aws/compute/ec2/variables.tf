@@ -29,6 +29,18 @@ variable "instance_type" {
   description = "EC2 instance type."
 }
 
+variable "user_data" {
+  type        = string
+  description = "Startup script by the user"
+  default     = null
+}
+
+variable "open_ingress_ports" {
+  type        = list(string)
+  description = "TCP ports to allow inbound from 0.0.0.0/0."
+  default     = []
+}
+
 variable "assign_public_ip" {
   type        = bool
   description = "Associate a public IP."
@@ -43,6 +55,7 @@ variable "subnet_id" {
 variable "iam_instance_profile_name" {
   type        = string
   description = "IAM instance profile name."
+  default     = null
 }
 
 variable "root_volume_type" {

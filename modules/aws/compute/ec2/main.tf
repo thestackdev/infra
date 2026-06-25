@@ -30,6 +30,17 @@ resource "aws_security_group" "this" {
   }
 }
 
+resource "aws_vpc_security_group_ingress_rule" "ingress_rule" {
+  for_each = var.enabled ? toset(var.open_ingress_ports) : []
+
+  security_group_id = aws_security_group.this[0].id
+
+  cidr_ipv4   = "0.0.0.0/0"
+  from_port   = each.value
+  ip_protocol = "tcp"
+  to_port     = each.value
+}
+
 resource "aws_vpc_security_group_egress_rule" "egress_rule" {
   count             = var.enabled ? 1 : 0
   security_group_id = aws_security_group.this[0].id
@@ -47,6 +58,7 @@ resource "aws_instance" "this" {
   iam_instance_profile        = var.iam_instance_profile_name
   vpc_security_group_ids      = [aws_security_group.this[0].id]
   monitoring                  = var.detailed_monitoring
+  user_data                   = var.user_data
 
   metadata_options {
     http_endpoint               = "enabled"
